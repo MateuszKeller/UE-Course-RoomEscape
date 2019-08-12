@@ -1,0 +1,20 @@
+### Unreal ###
+*/Binaries
+*/Build
+*/DerivedDataCache
+*/Intermediate
+*/Saved
+*_BuiltData.uasset
+
+*/Content/StarterContent/Materials
+*/Content/StarterContent/Textures
+*/Content/StarterContent/Particles
+*/Content/StarterContent/Shapes
+*/Content/StarterContent/HDRI
+*/Content/StarterContent/Architecture
+*/Content/StarterContent/Audio
+
+### Visual ###
+*.VC.*
+*.ipch
+*.suo
