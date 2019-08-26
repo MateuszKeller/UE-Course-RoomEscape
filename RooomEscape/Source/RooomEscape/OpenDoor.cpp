@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "OpenDoor.h"
+#include "Engine/World.h"
+#include "GameFramework/PlayerController.h"
 #include <GameFramework/Actor.h>
 
 // Sets default values for this component's properties
@@ -19,7 +21,8 @@ void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
+	Owner = GetOwner();
+	ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
 	
 }
 
@@ -37,8 +40,7 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 
 void UOpenDoor::OpenDoor()
 {
-	Owner = GetOwner();
-
-	FRotator NewRotatrion = Owner->GetActorRotation() + FRotator(60.f, 0.f, 0.f);
+	FRotator NewRotatrion = Owner->GetActorRotation(); 
+	NewRotatrion.Pitch += OpenAngle;
 	Owner->SetActorRotation(NewRotatrion);
 }
