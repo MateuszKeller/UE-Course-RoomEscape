@@ -22,6 +22,7 @@ void UOpenDoor::BeginPlay()
 	Super::BeginPlay();
 
 	Owner = GetOwner();
+	Angle = Owner->GetActorRotation();
 	ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
 	
 }
@@ -40,7 +41,7 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 
 void UOpenDoor::OpenDoor()
 {
-	FRotator NewRotatrion = Owner->GetActorRotation(); 
+	FRotator NewRotatrion = Angle;
 	NewRotatrion.Pitch += OpenAngle;
 	Owner->SetActorRotation(NewRotatrion);
 }
