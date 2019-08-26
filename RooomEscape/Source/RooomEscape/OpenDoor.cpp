@@ -35,8 +35,12 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	if(PressurePlate->IsOverlappingActor(ActorThatOpens))
 	{
 		OpenDoor();
+		LastDoorOpenTime = GetWorld()->GetTimeSeconds();
 	}
-	
+
+	if (GetWorld()->GetTimeSeconds() - LastDoorOpenTime > DoorCloseDelay)
+		CloseDoor();
+
 }
 
 void UOpenDoor::OpenDoor()
@@ -44,4 +48,9 @@ void UOpenDoor::OpenDoor()
 	FRotator NewRotatrion = Angle;
 	NewRotatrion.Pitch += OpenAngle;
 	Owner->SetActorRotation(NewRotatrion);
+}
+
+void UOpenDoor::CloseDoor()
+{
+	Owner->SetActorRotation(Angle);
 }
