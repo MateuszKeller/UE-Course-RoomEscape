@@ -19,19 +19,26 @@ void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Owner = GetOwner();
-
-	FRotator NewRotatrion = Owner->GetActorRotation() + FRotator(60.f, 0.f, 0.f);
-	Owner->SetActorRotation(NewRotatrion);
+	
 	
 }
-
 
 // Called every frame
 void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+	if(PressurePlate->IsOverlappingActor(ActorThatOpens))
+	{
+		OpenDoor();
+	}
+	
 }
 
+void UOpenDoor::OpenDoor()
+{
+	Owner = GetOwner();
+
+	FRotator NewRotatrion = Owner->GetActorRotation() + FRotator(60.f, 0.f, 0.f);
+	Owner->SetActorRotation(NewRotatrion);
+}
