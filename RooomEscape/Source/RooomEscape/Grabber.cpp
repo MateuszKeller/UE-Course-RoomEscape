@@ -4,6 +4,7 @@
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include "Engine/Public/DrawDebugHelpers.h"
+#include "GameFramework/Actor.h"
 
 #define OUT
 
@@ -39,11 +40,21 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	//UE_LOG(LogTemp, Warning, TEXT("Location: %s; Rocation: %s"), *ViewLocation.ToString(), *VievRotation.ToString())
 
 	FVector LineTraceEnd = ViewLocation + VievRotation.Vector() * Reach;
-
+	FCollisionQueryParams TraceParameteres(FName(TEXT("")), false, GetOwner());
 	if (DrawDebug)
 	{
 		
 		DrawDebugLine(GetWorld(), ViewLocation, LineTraceEnd, FColor(255, 0, 0), false, 0.f, 0.f, 10.f);
+	}
+
+	FHitResult Hit;
+	GetWorld()->LineTraceSingleByObjectType(OUT Hit, ViewLocation, LineTraceEnd, FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody), TraceParameteres);
+
+	AActor* ActorHit = Hit.GetActor();
+
+	if (ActorHit)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Line trace hit %s"), *(ActorHit->GetName()))
 	}
 }
 
