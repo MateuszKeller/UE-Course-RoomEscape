@@ -47,8 +47,14 @@ float UOpenDoor::GetTotalMassOnPlate()
 {
 	float TotalMass = 0.f;
 	TArray<AActor*> OvelapingActors;
+
 	///Finding all ovelaping actors
 	PressurePlate->GetOverlappingActors(OUT OvelapingActors);
+
+	for (auto* Actor : OvelapingActors)
+	{
+		TotalMass += Actor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
+	}
 	return TotalMass;
 }
 
