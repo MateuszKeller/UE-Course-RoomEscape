@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "Grabber.generated.h"
 
 
@@ -30,4 +31,7 @@ private:
 		bool DrawDebug = false;
 
 	float Reach = 150.f;
+
+	UPhysicsHandleComponent* PhysicsHandle = nullptr;
+	
 };
