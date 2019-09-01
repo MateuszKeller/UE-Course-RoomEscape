@@ -37,13 +37,16 @@ private:
 	FRotator Angle;
 
 	UPROPERTY(EditAnywhere)
-		ATriggerVolume *PressurePlate;
+		float TriggerMass = 50.f;
+	
 
-	UPROPERTY(VisibleAnywhere)
-		AActor* ActorThatOpens;
+	UPROPERTY(EditAnywhere)
+		ATriggerVolume *PressurePlate;
 
 	UPROPERTY(EditAnywhere)
 		float DoorCloseDelay = 1.f;
 	float LastDoorOpenTime;
+
+	float GetTotalMassOnPlate();
 		
 };
