@@ -24,10 +24,15 @@ void UGrabber::BeginPlay()
 	Super::BeginPlay();
 
 	FindPhysicHandleComponent();
-	SetUpInputComponent();
-		
+	SetUpInputComponent();	
 }
 
+void UGrabber::FindPhysicHandleComponent()
+{
+	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	if (PhysicsHandle == nullptr)
+		UE_LOG(LogTemp, Error, TEXT("%s missing physics handle component!"), *(GetOwner()->GetName()))
+}
 void UGrabber::SetUpInputComponent()
 {
 	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
@@ -37,20 +42,7 @@ void UGrabber::SetUpInputComponent()
 		InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
 		InputComponent->BindAction("Grab", IE_Released, this, &UGrabber::Release);
 	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("%s missing input component!"), *(GetOwner()->GetName()))
-	}
-}
-
-void UGrabber::FindPhysicHandleComponent()
-{
-	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-	if (PhysicsHandle) {}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("%s missing physics handle component!"), *(GetOwner()->GetName()))
-	}
+	else { UE_LOG(LogTemp, Error, TEXT("%s missing input component!"), *(GetOwner()->GetName())) }
 }
 
 // Called every frame
@@ -58,16 +50,28 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if (PhysicsHandle->GrabbedComponent)
+	{
+		PhysicsHandle->SetTargetLocation(GetReachLineEnd());
+	}
+}
+
+FVector UGrabber::GetReachLineStart()
+{
 	FVector ViewLocation;
 	FRotator VievRotation;
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT ViewLocation, OUT VievRotation);
-	
-	FVector LineTraceEnd = ViewLocation + VievRotation.Vector() * Reach;
 
-	if (PhysicsHandle->GrabbedComponent)
-	{
-		PhysicsHandle->SetTargetLocation(LineTraceEnd);
-	}
+	return ViewLocation;
+}
+
+FVector UGrabber::GetReachLineEnd()
+{
+	FVector ViewLocation;
+	FRotator VievRotation;
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT ViewLocation, OUT VievRotation);
+
+	return ViewLocation + VievRotation.Vector() * Reach;
 }
 
 void UGrabber::Grab()
@@ -89,19 +93,13 @@ void UGrabber::Release()
 		PhysicsHandle->ReleaseComponent();
 }
 
-FHitResult UGrabber::GetFirstPhysicsBodyInReach() const
+const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
 {
-	FVector ViewLocation;
-	FRotator VievRotation;
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT ViewLocation, OUT VievRotation);
-	//UE_LOG(LogTemp, Warning, TEXT("Location: %s; Rocation: %s"), *ViewLocation.ToString(), *VievRotation.ToString())
-
-	FVector LineTraceEnd = ViewLocation + VievRotation.Vector() * Reach;
 	FCollisionQueryParams TraceParameteres(FName(TEXT("")), false, GetOwner());
-	if (DrawDebug) { DrawDebugLine(GetWorld(), ViewLocation, LineTraceEnd, FColor(255, 0, 0), false, 0.f, 0.f, 10.f); }
+	if (DrawDebug) { DrawDebugLine(GetWorld(), GetReachLineStart(), GetReachLineEnd(), FColor(255, 0, 0), false, 0.f, 0.f, 10.f); }
 
 	FHitResult Hit;
-	GetWorld()->LineTraceSingleByObjectType(OUT Hit, ViewLocation, LineTraceEnd, FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody), TraceParameteres);
+	GetWorld()->LineTraceSingleByObjectType(OUT Hit, GetReachLineStart(), GetReachLineEnd(), FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody), TraceParameteres);
 
 	AActor* ActorHit = Hit.GetActor();
 
@@ -111,4 +109,3 @@ FHitResult UGrabber::GetFirstPhysicsBodyInReach() const
 	}
 	return Hit;
 }
-
