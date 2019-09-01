@@ -58,17 +58,35 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	FVector ViewLocation;
+	FRotator VievRotation;
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT ViewLocation, OUT VievRotation);
+	
+	FVector LineTraceEnd = ViewLocation + VievRotation.Vector() * Reach;
+
+	if (PhysicsHandle->GrabbedComponent)
+	{
+		PhysicsHandle->SetTargetLocation(LineTraceEnd);
+	}
 }
 
 void UGrabber::Grab()
 {
 	UE_LOG(LogTemp, Log, TEXT("Grab. Grab. Grabu grab."))
-	GetFirstPhysicsBodyInReach();
+	auto HitResult = GetFirstPhysicsBodyInReach();
+	UPrimitiveComponent* ComponentToGrab = HitResult.GetComponent();
+
+	if (HitResult.GetActor()) // If there is actor in reach we attach a physiscs handle
+	{
+		PhysicsHandle->GrabComponentAtLocation(ComponentToGrab, NAME_None, ComponentToGrab->GetOwner()->GetActorLocation());
+	}
+	
 }
 
 void UGrabber::Release()
 {
 	UE_LOG(LogTemp, Log, TEXT("No Grabu grab."))
+		PhysicsHandle->ReleaseComponent();
 }
 
 FHitResult UGrabber::GetFirstPhysicsBodyInReach() const
