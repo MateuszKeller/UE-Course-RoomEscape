@@ -24,8 +24,7 @@ void UOpenDoor::BeginPlay()
 	Super::BeginPlay();
 
 	Owner = GetOwner();
-	Angle = Owner->GetActorRotation();	
-
+	
 	if (!PressurePlate) { UE_LOG(LogTemp, Error, TEXT("%s missing pressure plate!"), *(GetOwner()->GetName())) }
 }
 
@@ -36,13 +35,13 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 
 	if (GetTotalMassOnPlate() > TriggerMass)
 	{
-		OpenDoor();
-		LastDoorOpenTime = GetWorld()->GetTimeSeconds();
+		OnOpen.Broadcast();
 	}
-
-	if (GetWorld()->GetTimeSeconds() - LastDoorOpenTime > DoorCloseDelay)
-		CloseDoor();
-
+	else
+	{
+		OnClose.Broadcast();
+	}
+		
 }
 
 float UOpenDoor::GetTotalMassOnPlate()
@@ -59,19 +58,4 @@ float UOpenDoor::GetTotalMassOnPlate()
 		TotalMass += Actor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
 	}
 	return TotalMass;
-}
-
-void UOpenDoor::OpenDoor()
-{
-	/*
-	FRotator NewRotatrion = Angle;
-	NewRotatrion.Pitch += OpenAngle;
-	Owner->SetActorRotation(NewRotatrion);
-	*/
-	OnOpenRequest.Broadcast();
-}
-
-void UOpenDoor::CloseDoor()
-{
-	Owner->SetActorRotation(Angle);
 }
