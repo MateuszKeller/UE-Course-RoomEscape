@@ -25,6 +25,8 @@ void UOpenDoor::BeginPlay()
 
 	Owner = GetOwner();
 	Angle = Owner->GetActorRotation();	
+
+	if (!PressurePlate) { UE_LOG(LogTemp, Error, TEXT("%s missing pressure plate!"), *(GetOwner()->GetName())) }
 }
 
 // Called every frame
@@ -48,6 +50,7 @@ float UOpenDoor::GetTotalMassOnPlate()
 	float TotalMass = 0.f;
 	TArray<AActor*> OvelapingActors;
 
+	if (!PressurePlate) { return TotalMass; }
 	///Finding all ovelaping actors
 	PressurePlate->GetOverlappingActors(OUT OvelapingActors);
 
