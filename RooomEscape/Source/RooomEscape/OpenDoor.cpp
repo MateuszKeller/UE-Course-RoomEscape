@@ -63,9 +63,12 @@ float UOpenDoor::GetTotalMassOnPlate()
 
 void UOpenDoor::OpenDoor()
 {
+	/*
 	FRotator NewRotatrion = Angle;
 	NewRotatrion.Pitch += OpenAngle;
 	Owner->SetActorRotation(NewRotatrion);
+	*/
+	OnOpenRequest.Broadcast();
 }
 
 void UOpenDoor::CloseDoor()
